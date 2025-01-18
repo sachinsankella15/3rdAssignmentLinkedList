@@ -1,0 +1,99 @@
+#include <iostream>
+using namespace std;
+
+struct SparseMatrixNode {
+    int rowPosition;
+    int columnPosition;
+    int nonZeroValue;
+    SparseMatrixNode* nextNode;
+
+    SparseMatrixNode(int row, int col, int value)
+        : rowPosition(row), columnPosition(col), nonZeroValue(value), nextNode(nullptr) {}
+};
+
+class SparseMatrix {
+private:
+    SparseMatrixNode* headNode;
+
+public:
+    SparseMatrix() : headNode(nullptr) {}
+
+    ~SparseMatrix() {
+        SparseMatrixNode* currentNode;
+        while (headNode) {
+            currentNode = headNode;
+            headNode = headNode->nextNode;
+            delete currentNode;
+        }
+    }
+
+    void addNonZeroElement(int row, int col, int value) {
+        if (value == 0) return;
+
+        SparseMatrixNode* newNode = new SparseMatrixNode(row, col, value);
+        if (!headNode) {
+            headNode = newNode;
+        } else {
+            SparseMatrixNode* tempNode = headNode;
+            while (tempNode->nextNode) {
+                tempNode = tempNode->nextNode;
+            }
+            tempNode->nextNode = newNode;
+        }
+    }
+
+    void displaySparseMatrix() const {
+        if (!headNode) {
+            cout << "The sparse matrix is empty." << endl;
+            return;
+        }
+
+        SparseMatrixNode* currentNode = headNode;
+        cout << "Row indexes: ";
+        while (currentNode) {
+            cout << currentNode->rowPosition << " ";
+            currentNode = currentNode->nextNode;
+        }
+        cout << endl;
+
+        currentNode = headNode;
+        cout << "Column indexes: ";
+        while (currentNode) {
+            cout << currentNode->columnPosition << " ";
+            currentNode = currentNode->nextNode;
+        }
+        cout << endl;
+
+        currentNode = headNode;
+        cout << "Values: ";
+        while (currentNode) {
+            cout << currentNode->nonZeroValue << " ";
+            currentNode = currentNode->nextNode;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    SparseMatrix sparseMatrix;
+
+    int inputMatrix[4][4] = {
+        {0, 0, 3, 0},
+        {22, 0, 0, 0},
+        {0, 0, 0, 4},
+        {0, 7, 0, 0}
+    };
+
+    int totalRows = 4, totalColumns = 4;
+
+    for (int currentRow = 0; currentRow < totalRows; currentRow++) {
+        for (int currentColumn = 0; currentColumn < totalColumns; currentColumn++) {
+            sparseMatrix.addNonZeroElement(currentRow, currentColumn, inputMatrix[currentRow][currentColumn]);
+        }
+    }
+
+    cout << "Sparse Matrix Representation:" << endl;
+    sparseMatrix.displaySparseMatrix();
+
+    return 0;
+}
